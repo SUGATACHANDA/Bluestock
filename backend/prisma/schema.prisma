@@ -1,0 +1,65 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id        String   @id @default(uuid())
+    name      String
+    email     String   @unique
+    password  String
+    createdAt DateTime @default(now())
+}
+
+model Company {
+    company_id          String   @id @default(uuid())
+    company_name        String
+    company_logo        String?
+    companyOverview     String[]
+    businessDescription String[]
+    objectives          String[]
+    revenue             String?
+    netProfit           String?
+    totalAssets         String?
+    bookValue           String?
+    riskFactors         String[]
+    ipos                IPO[]
+}
+
+model IPO {
+    ipo_id               String     @id @default(uuid())
+    company_id           String
+    company              Company    @relation(fields: [company_id], references: [company_id], onDelete: Cascade)
+    price_band           String?
+    open_date            DateTime?
+    close_date           DateTime?
+    issue_size           String?
+    issue_type           String?
+    listing_date         DateTime?
+    status               IPOStatus
+    ipo_price            Decimal?   @db.Decimal(10, 2)
+    listing_price        Decimal?   @db.Decimal(10, 2)
+    listing_gain         Decimal?   @db.Decimal(5, 2)
+    current_market_price Decimal?   @db.Decimal(10, 2)
+    current_return       Decimal?   @db.Decimal(5, 2)
+    documents            Document[]
+}
+
+model Document {
+    document_id Int     @id @default(autoincrement())
+    ipo_id      String
+    ipo         IPO     @relation(fields: [ipo_id], references: [ipo_id], onDelete: Cascade)
+    rhp_pdf     String?
+    drhp_pdf    String?
+}
+
+enum IPOStatus {
+    UPCOMING
+    OPEN
+    CLOSED
+    LISTED
+}
