@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { getIPOById } from "../api/ipoApi";
+import { getIPOById } from "../api/ipoAPI";
 
 const IPOCard = ({
     ipo_id,

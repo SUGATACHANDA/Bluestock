@@ -6,7 +6,7 @@ import {
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import IPOCard from '../components/IPOCard';
-import { getIPOById, getAllIPOs } from '../api/ipoApi';
+import { getIPOById, getAllIPOs } from '../api/ipoAPI';
 import { getCompanyById } from '../api/companyApi';
 
 

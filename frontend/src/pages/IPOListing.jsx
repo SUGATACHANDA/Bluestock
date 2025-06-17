@@ -5,7 +5,7 @@ import FAQCard from '../components/FAQCard';
 import Footer from '../components/Footer';
 import { Search, Loader2 } from 'lucide-react';
 import useTitle from '../components/Title';
-import { getAllIPOs } from '../api/ipoApi';
+import { getAllIPOs } from '../api/ipoAPI';
 import { getCompanyById } from '../api/companyApi';
 
 const IPOListing = () => {
