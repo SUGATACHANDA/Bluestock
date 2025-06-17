@@ -18,6 +18,8 @@ const IPODetail = () => {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('overview');
 
+    const RELATED_IPO_LIMIT = 3;
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -31,7 +33,7 @@ const IPODetail = () => {
                 const related = await Promise.all(
                     allIPOs
                         .filter((r) => r.ipo_id !== ipo.ipo_id && r.company_id !== ipo.company_id)
-                        .slice(0, 3)
+                        .slice(0, RELATED_IPO_LIMIT) // 👈 Using limit here
                         .map(async (r) => {
                             try {
                                 const relatedCompany = await getCompanyById(r.company_id);

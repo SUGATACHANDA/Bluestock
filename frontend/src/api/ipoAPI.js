@@ -2,10 +2,19 @@ import axios from "axios";
 
 const backend_app_url = import.meta.env.VITE_BACKEND_APP_URL;
 
-export const createIPO = async (formData) => {
+export const createIPO = async (data, rhpFile, drhpFile) => {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => formData.append(key, value));
+
+    if (rhpFile) formData.append("rhp_pdf", rhpFile);
+    if (drhpFile) formData.append("drhp_pdf", drhpFile);
+
     const response = await axios.post(`${backend_app_url}/ipos`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
     });
+
     return response.data;
 };
 

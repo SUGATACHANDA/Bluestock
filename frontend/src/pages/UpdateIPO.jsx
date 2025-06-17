@@ -79,7 +79,7 @@ const UpdateIPO = () => {
             {!isLoading ? (
                 <div className="max-w-3xl mx-auto px-4 py-6 space-y-8">
                     <div className="flex items-center justify-between mb-2">
-                        <h2 className="text-2xl font-semibold text-gray-900">Update IPO</h2>
+                        <h2 className="text-2xl font-semibold text-gray-900">Update IPO for {company?.company_name}</h2>
                         <button
                             onClick={() => navigate("/manage-ipo")}
                             className="text-sm font-medium text-indigo-600 hover:text-indigo-800"

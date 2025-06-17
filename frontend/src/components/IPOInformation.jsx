@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { getAllCompanies } from "../api/companyApi";
-import axios from "axios";
+import { createIPO } from "../api/ipoAPI";
 
 const IPOInformation = () => {
   const [companies, setCompanies] = useState([]);
   const [rhpFile, setRhpFile] = useState(null);
   const [drhpFile, setDrhpFile] = useState(null);
 
-  const backend_app_url = import.meta.env.VITE_BACKEND_APP_URL;
+
 
   const {
     register,
@@ -47,18 +47,7 @@ const IPOInformation = () => {
 
   const onSubmit = async (data) => {
     try {
-      const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => formData.append(key, value));
-
-      if (rhpFile) formData.append("rhp_pdf", rhpFile);
-      if (drhpFile) formData.append("drhp_pdf", drhpFile);
-
-      await axios.post(`${backend_app_url}/ipos`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
+      await createIPO(data, rhpFile, drhpFile);
       alert("IPO created successfully!");
       reset();
       setRhpFile(null);

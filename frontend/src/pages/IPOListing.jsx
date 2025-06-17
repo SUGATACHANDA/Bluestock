@@ -11,12 +11,15 @@ import { getCompanyById } from '../api/companyApi';
 const IPOListing = () => {
     useTitle("Your Destination for all IPOs");
 
+    const IPO_LIMIT = 6
+
     const [ipoData, setIpoData] = useState([]);
     const [filteredIpoData, setFilteredIpoData] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [visibleCount, setVisibleCount] = useState(IPO_LIMIT); // default number of IPOs to show
 
     const formatDate = (dateString) => {
         if (!dateString) return "-";
@@ -48,7 +51,7 @@ const IPOListing = () => {
                         id: ipo.ipo_id,
                         companyName: company?.company_name || 'Unnamed Company',
                         logo: company?.company_logo || `https://placehold.co/48x48/64748b/FFFFFF?text=${company?.company_name?.charAt(0) || 'I'}`,
-                        priceRange: `${ipo.price_band}`,
+                        priceRange: ipo.price_band,
                         openDate: formatDate(ipo.open_date),
                         closeDate: formatDate(ipo.close_date),
                         issueSize: ipo.issue_size,
@@ -78,52 +81,34 @@ const IPOListing = () => {
             return nameMatch && statusMatch;
         });
         setFilteredIpoData(filtered);
+        setVisibleCount(IPO_LIMIT); // Reset count whenever search/filter changes
     }, [searchTerm, statusFilter, ipoData]);
+
+    const handleShowMore = () => {
+        setVisibleCount((prev) => prev + 6);
+    };
 
     const faqData = [
         {
             question: "How to Subscribe to an IPO?",
-            answer: `Step 1: Login to your respective service provider.
-Step 2: Click on the IPO button.
-Step 3: Select the IPO you want to bid and enter the relevant details.
-Step 4: Your subscription will be completed once you make the payment or give permission.`
+            answer: `1. Login to your broker's platform.\n2. Go to IPO section.\n3. Select the IPO & enter your bid.\n4. Confirm and submit the application.`,
         },
         {
-            question: "Should I buy an IPO first day?",
-            answer: "It depends on various factors including the company's fundamentals, market conditions, and your investment strategy. It's recommended to do thorough research before making any investment decisions."
+            question: "Should I buy an IPO on the first day?",
+            answer: "It depends on market sentiment, company fundamentals, and risk appetite. Consult financial advisors before investing.",
         },
         {
-            question: "How do you know if an IPO is good?",
-            answer: "Evaluate the company's business model, financial health, growth prospects, management quality, and market conditions. Review the prospectus and consider expert opinions."
+            question: "What is issue size in IPO?",
+            answer: "Issue size refers to the total value of shares offered by the company during the IPO.",
         },
         {
-            question: "How to check IPO start date?",
-            answer: "You can check IPO start dates on our platform, company websites, stock exchange websites, or financial news portals. We provide updated information on all upcoming IPOs."
-        },
-        {
-            question: "What is issue size?",
-            answer: "Issue size refers to the total amount of money a company aims to raise through its IPO. It's calculated by multiplying the number of shares offered by the price per share."
-        },
-        {
-            question: "How many shares in a lot?",
-            answer: "The number of shares in a lot varies for each IPO. This information is specified in the IPO prospectus and is displayed on our platform for each listing."
-        },
-        {
-            question: "How is the lot size calculated?",
-            answer: "Lot size is determined by the company and regulatory authorities based on the share price and minimum investment amount requirements set by exchanges."
+            question: "How many shares are in one lot of an IPO?",
+            answer: "Lot size differs by IPO and is mentioned in the prospectus. Usually, it ranges from 10 to 100 shares per lot.",
         },
         {
             question: "Who decides the IPO price band?",
-            answer: "The IPO price band is decided by the company in consultation with merchant bankers and book running lead managers based on market conditions and company valuation."
+            answer: "The company in consultation with merchant bankers decides the IPO price band for book-building IPOs.",
         },
-        {
-            question: "What is IPO GMP?",
-            answer: "IPO GMP (Grey Market Premium) is the premium amount at which IPO shares are traded in the grey market before they are officially listed on stock exchanges."
-        },
-        {
-            question: "How many lots should I apply for IPO?",
-            answer: "You can apply for multiple lots based on your investment capacity and risk appetite. However, there are maximum limits set by regulations for retail and institutional investors."
-        }
     ];
 
     return (
@@ -133,9 +118,9 @@ Step 4: Your subscription will be completed once you make the payment or give pe
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Upcoming IPO</h1>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Upcoming IPOs</h1>
                     <p className="text-gray-600">
-                        Find information on all IPOs that have been filed with the Securities and Exchange Commission and are expected to go public.
+                        Find details about all upcoming and ongoing IPOs in one place.
                     </p>
                 </div>
 
@@ -174,32 +159,42 @@ Step 4: Your subscription will be completed once you make the payment or give pe
                 ) : error ? (
                     <div className="text-center text-red-500 py-12">{error}</div>
                 ) : filteredIpoData.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-                        {filteredIpoData.map((ipo) => (
-                            <IPOCard
-                                key={ipo.id}
-                                companyName={ipo.companyName}
-                                logo={ipo.logo}
-                                priceRange={formatPriceBand(ipo.priceRange)}
-                                openDate={ipo.openDate}
-                                closeDate={ipo.closeDate}
-                                issueSize={ipo.issueSize}
-                                lotSize={ipo.lotSize}
-                                listingDate={ipo.listingDate}
-                                status={ipo.status}
-                                ipo_id={ipo.id}
-                            />
-                        ))}
-                    </div>
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                            {filteredIpoData.slice(0, visibleCount).map((ipo) => (
+                                <IPOCard
+                                    key={ipo.id}
+                                    companyName={ipo.companyName}
+                                    logo={ipo.logo}
+                                    priceRange={formatPriceBand(ipo.priceRange)}
+                                    openDate={ipo.openDate}
+                                    closeDate={ipo.closeDate}
+                                    issueSize={ipo.issueSize}
+                                    lotSize={ipo.lotSize}
+                                    listingDate={ipo.listingDate}
+                                    status={ipo.status}
+                                    ipo_id={ipo.id}
+                                />
+                            ))}
+                        </div>
+                        {visibleCount < filteredIpoData.length && (
+                            <div className="text-center mt-6">
+                                <button
+                                    onClick={handleShowMore}
+                                    className="px-4 py-2 mb-5 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
+                                >
+                                    Show More
+                                </button>
+                            </div>
+                        )}
+                    </>
                 ) : (
                     <div className="text-center text-gray-500 py-12">No IPOs found matching your search criteria.</div>
                 )}
 
                 <div className="mb-16">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Frequently Asked Questions?</h2>
-                    <p className="text-gray-600 mb-8">
-                        Find answers to common questions that come in your mind related to IPO
-                    </p>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Frequently Asked Questions</h2>
+                    <p className="text-gray-600 mb-8">Find answers to common questions about IPOs.</p>
                     <div className="w-full">
                         {faqData.map((faq, index) => (
                             <FAQCard

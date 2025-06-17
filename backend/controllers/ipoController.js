@@ -195,7 +195,7 @@ exports.updateIPO = async (req, res) => {
 
 exports.deleteIPO = async (req, res) => {
     try {
-        await prisma.iPO.delete({
+        await prisma.delete({
             where: { ipo_id: req.params.id },
         });
         return res.json({ success: true, message: "IPO deleted successfully" });
